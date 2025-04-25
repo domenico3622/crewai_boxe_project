@@ -22,10 +22,10 @@ def run():
         'csv_file': csv_path,  # Se necessario per altre funzioni
         'stringa_csv': csv_content,  # Placeholder per l'intero contenuto del CSV
         'boxer': {
-            'nome': "Buster Douglas",
+            'nome': "Franchino Er Criminale",
             'categoria_peso': 'Heavyweight',
             'vittorie': 38,
-            'sconfitte': 6,
+            'sconfitte': 2,
         }
     }
     BoxingCrew().crew().kickoff(inputs=inputs)
