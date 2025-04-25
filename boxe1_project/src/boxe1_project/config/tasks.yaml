@@ -1,87 +1,144 @@
 selection_task:
   description: >
-    Analizza il seguente file CSV degli avversari e trova l'avversario migliore per il nostro pugile.
-    La scelta dell'avversario deve rispettare queste condizioni:
-    - l'avversario deve essere nella stessa categoria di peso, non è consentito di scegliere un avversario con categoria di peso differente.
-    - Rapporto vittorie/sconfitte ≤ quello del nostro pugile. Calcola ratio = vittorie ÷ sconfitte per il pugile e per ogni avversario.  
-    - seleziona il candidato più “competitivo”. Tra tutti gli avversari validi (ratio ≤ ratio_pugile), scegli quello con:
-       - Rapporto più vicino a quello del pugile (cioè il massimo ratio possibile senza superarlo).
-       - In caso di parità, preferisci quello con ranking (o vittorie) maggiore.
-    
-    Esempio di logica:
-    Supponiamo che il nostro pugile sia “Lightweight” con record 20-5 (ratio = 4.0).
-    Dal CSV estraiamo tutti i “Lightweight” con ratio ≤ 4.0, ad es.:  
-    - “Boxer A”: 18-5 → ratio = 3.6  
-    - “Boxer B”: 15-4 → ratio = 3.75  
-    - “Boxer C”: 10-3 → ratio ≈ 3.33  
-    Scelta: “Boxer B” (ratio 3.75 è il più vicino a 4.0 senza superarlo), anziché il più basso “Boxer C” o “Boxer A”.
+    Analizza il seguente CSV contenente avversari disponibili e seleziona quello ideale per il nostro pugile, secondo queste regole:
 
-    Di seguito è riportato il csv su cui scegliere il pugile.
+    1. L'avversario deve avere la **stessa categoria di peso**.
+    2. Il suo **rapporto vittorie/sconfitte (ratio)** deve essere <= a quello del nostro pugile. Non è ammesso che sia maggiore al rapporto del nostro pugile!
+    3. Tra gli avversari validi, seleziona il più competitivo:
+       - Preferisci il ratio più vicino (ma ≤) a quello del pugile.
+       - In caso di pari ratio, scegli quello con più vittorie o miglior ranking.
+
+    Penalità:
+    - -3 punti se selezioni categoria peso errata
+    - -2 punti se il ratio supera quello del pugile
+    - -1 punto se scegli un avversario meno competitivo
+
+    Bonus:
+    +2 punti se includi motivazione chiara della scelta
+    +2 punto se aggiungi confronto tra i candidati finali
+    Nell'output scrivi tutti i pugili nella stessa cagetoria. successivimente elimini i pugili con ratio maggiore del nostro pugile.
+    Tra quelli rimasti prendi il pugile con ratio piu simile al nostro.
+
+    Esempio pugile: 'nome': "Boxer V",
+            'categoria_peso': 'Heavyweight',
+            'vittorie': 38,
+            'sconfitte': 6,
+    esempio di csv:
+    nome_avversario,categoria_peso,vittorie,sconfitte,stile
+    "Boxer A",Heavyweight,56,5,"tecnico-veloce"
+    "Boxer B",Heavyweight,10,6,"potente-aggressivo"
+    "Boxer C",Welterweight,50,1,"difensivo-tecnico"
+    i ratio sarebbero:
+    Boxer A : 56/5 = 11.2
+    Boxer B : 10/6 = 1.67
+    Boxer C : 50/1 = 50
+    Essendo che Boxer V ha 6.33 di ratio, devo scegliere i pugili con categoria uguale a Boxer V, dunque Heavyweight, e con ratio minore uguale.
+    In questo caso prendo Boxer B.
+
+    Ecco i valori veri su cui devi lavorare:    
+    Il nostro pugile è:
+    {boxer}
+
+    Il CSV da è analizzare:
     {stringa_csv}
   expected_output: >
-    I dettagli (nome, record, stile) dell'avversario selezionato. 
+    Lista di tutti gli avversari della stessa categoria e con ratio minore uguale al nostro.
+    Nome dell'avversario scelto + motivazione. Includi record, ratio e stile dell'avversario scelto.
   agent: manager
 
 
 training_task:
   description: >
-    Il tuo compito è definire una strategia di allenamento dettagliata per il nostro pugile, 
-    basata sullo stile dell'avversario selezionato. Utilizza le seguenti linee guida e struttura la strategia in modo chiaro e articolato:
-    
-    1. **Analisi dello stile dell'avversario**  
-       - Elenca le caratteristiche principali dello stile dell'avversario (es. aggressivo, tecnico, difensivo, potente, veloce, equilibrato, resistente).  
-       - Fornisci una sintesi delle buone pratiche generali per affrontare ciascuno di questi stili:
-         - *Aggressivo:* Rafforza difesa, lavoro sul contrattacco, esercizi di footwork per schivare attacchi.
-         - *Tecnico:* Allenamento mirato a migliorare la precisione dei colpi, esercizi tattici e di analisi video.
-         - *Difensivo:* Incrementa il lavoro sulla velocità e sulle contromosse, allenamenti per migliorare reattività e resistenza.
-         - *Potente:* Focalizzati sulla resistenza agli impatti, rafforza la guardia e lavora sugli esquivi.
-         - *Veloce:* Migliora i riflessi e la coordinazione mano-occhio, esercizi di agilità e reaction drills.
-         - *Equilibrato/Resistente:* Combina esercizi di forza, resistenza e tattica, con sessioni di sparring controllato.
+    Progetta un piano di allenamento settimanale per il nostro pugile, basato sullo **stile dell’avversario**, con sempre due giorni di riposo non consecutivi.
 
-    2. **Struttura settimanale di allenamento**  
-       - Progetta un piano di allenamento su base settimanale che includa:
-         - **Lunedì:** Allenamento cardiovascolare e di resistenza (es. corsa, intervalli ad alta intensità).
-         - **Martedì:** Sessione tecnica (esercizi specifici di footwork, combinazioni di pugni, analisi video).
-         - **Mercoledì:** Allenamento di forza (lavoro in palestra, potenziamento muscolare, core stability).
-         - **Giovedì:** Sessione difensiva (esercizi per migliorare la guardia, lavoro di esquive e contrattacchi).
-         - **Venerdì:** Sparring o simulazioni di combattimento mirate allo stile dell'avversario.
-         - **Sabato:** Allenamento misto (revisione tecnica, esercizi di agilità e ripasso delle tattiche).
-         - **Domenica:** Riposo attivo o recupero (stretching, yoga, lavori di mobilità).
-       - Specifica eventuali varianti giornaliere a seconda dello stile dell'avversario. Ad esempio, contro un pugile aggressivo potresti suggerire:
-         > "Inserisci sessioni extra di reattività e contrattacco; allena sessioni di shadow boxing mirato a simulare l'avversario aggressivo."
+    1. **Analisi stile**  
+       - Identifica lo stile: aggressivo, tecnico, difensivo, potente, veloce, equilibrato/resistente.  
+       - Per ogni stile, associa le priorità di allenamento:
+         - *Aggressivo:* difesa, schivate, contrattacco.
+         - *Tecnico:* precisione, tattica, lettura del match.
+         - *Difensivo:* rapidità di reazione, controllo del ring.
+         - *Potente:* resistenza all’impatto, guardia solida.
+         - *Veloce:* riflessi, coordinazione mano-occhio.
+         - *Equilibrato/Resistente:* resistenza prolungata, adattabilità tattica.
 
-    3. **Esempi e best practice**  
-       - Fornisci uno o due esempi concreti di come strutturare una settimana di allenamento in base allo stile:
-         
-         *Esempio 1: Avversario Aggressivo*  
-         - **Lunedì:** 45 minuti di corsa a intervalli, seguiti da esercizi di agilità.  
-         - **Martedì:** Esercizi di shadow boxing focalizzati su difesa e contrattacco, uso di sacco pesante per simulare colpi potenti.  
-         - **Mercoledì:** Lavoro in palestra con enfasi su core e parte superiore del corpo (esercizi isometrici per migliorare la resistenza agli impatti).  
-         - **Giovedì:** Drills difensivi con partner, esercizi di schivata e parata.  
-         - **Venerdì:** Sessione di sparring con focus su tecniche di contrattacco immediato.  
-         - **Sabato:** Esercizi misti: brevi sprint, shadow boxing e stretching.  
-         - **Domenica:** Recupero attivo con sessioni di yoga e massaggio.
-         
-         *Esempio 2: Avversario Tecnico*  
-         - **Lunedì:** 40 minuti di corsa moderata e esercizi di footwork.  
-         - **Martedì:** Sessione tecnica con esercizi specifici di precisione e combinazioni di pugni; revisione video del combattimento avversario.  
-         - **Mercoledì:** Allenamento di forza e resistenza, focalizzato su core e gambe.  
-         - **Giovedì:** Esercizi tattici e drills di reazione, simulazioni di movimenti dell'avversario.  
-         - **Venerdì:** Sparring controllato focalizzato sulla difesa contro attacchi raffinati.  
-         - **Sabato:** Sessione integrata di allenamento con esercizi di agilità e coordinazione.  
-         - **Domenica:** Recupero attivo e sessione di analisi tecnica con allenatore.
-       
-       - Includi inoltre linee guida generali che possano essere adattate al tipo specifico di avversario, indicando che il piano deve essere flessibile e personalizzato in base alle necessità individuali del pugile.
+    2. **Piano settimanale** (7 giorni, 2 di riposo non consecutivi)  
+       - Ogni giorno indica: obiettivo, tipo di sessione (es. cardio pugilistico, tecnica, sparring, forza specifica).  
+       - Scegli 2 giorni di riposo NON ADIACENTI (es. mercoledì e domenica).
 
-    4. **Output finale**  
-       - Il risultato deve essere un documento strutturato in sezioni: introduzione (analisi dell'avversario), piano settimanale dettagliato con orari ed esercizi, e conclusioni con suggerimenti tattici per la preparazione al combattimento.
-       - Formatta il documento in markdown (senza delimitatori “```”) in modo che sia leggibile e ben organizzato.
+    3. **Esempi per tutti gli stili**  
+       - *Aggressivo:*  
+         - Lun: cardio + drills difensivi  
+         - Mar: shadow boxing e sacco leggero (<40kg) per lavorare sulla velocità dei colpi.  
+         - Mer: RIPOSO  
+         - Gio: sparring su contrattacco. Schivate base seguite sempre da un pugno base.  
+         - Ven: footwork rapido + pad work  
+         - Sab: forza esplosiva (panca isometrica, squat jump)  
+         - Dom: RIPOSO  
 
-    Utilizza queste linee guida per fornire una strategia di allenamento completa, che possa essere facilmente adattata a diverse situazioni e stili di avversario. Assicurati di includere esempi concreti, suddividendo la settimana in sessioni specifiche e offrendo approfondimenti sulle tecniche da adottare per massimizzare le performance del pugile.
+       - *Tecnico:*  
+         - Lun: tecnica footwork + combinazioni lente  
+         - Mar: analisi video + precision drills al sacco  
+         - Mer: RIPOSO  
+         - Gio: pad work tattico per affinare schivate  
+         - Ven: sparring controllato 
+         - Sab: core & stabilità  
+         - Dom: RIPOSO  
+
+       - *Difensivo:*  
+         - Lun: riflessi (drill con luce) + scatti brevi  
+         - Mar: shadow boxing offensivo  
+         - Mer: RIPOSO  
+         - Gio: sparring mirato sll'aprire la guardia dell'aversiario  
+         - Ven: esercizi di guardia fissa  
+         - Sab: agility ladder + combo attacco  
+         - Dom: RIPOSO  
+
+       - *Potente:*  
+         - Lun: reflex ball + potenziamento spalle/collo  
+         - Mar: forza esplosiva (plyo push-up)  
+         - Mer: RIPOSO  
+         - Gio: sparring + padwork veloce
+         - Ven: esercizi isometrici di guardia  
+         - Sab: cardio   
+         - Dom: RIPOSO  
+
+       - *Veloce:*  
+         - Lun: jump rope ad alta velocità  
+         - Mar: shadow boxing rapido  
+         - Mer: RIPOSO  
+         - Gio: drill di reazione con partner  
+         - Ven: sparring ritmo elevato  
+         - Sab: footwork drill su linee  
+         - Dom: RIPOSO  
+
+       - *Equilibrato/Resistente:*  
+         - Lun: circuito pugilistico (cardio+tecnica)  
+         - Mar: sparring moderato  
+         - Mer: RIPOSO  
+         - Gio: core & resistenza (plank, burpees)  
+         - Ven: pad work + combinazioni  
+         - Sab: footwork + reazione  
+         - Dom: RIPOSO  
+
+    4. **Output richiesto**  
+       - Sezioni:
+         - *Introduzione*: stile avversario + priorità di allenamento  
+         - *Programma*: tabella giorno per giorno con sessione e note  
+         - *Conclusioni*: consigli tattici finali  
+       - Formatta in markdown (senza ```)
+
+    Penalità:
+    - -3 se meno di 2 giorni di riposo non consecutivi  
+    - -2 se manca personalizzazione per stile  
+    - -1 se esercizi non sono specifici alla boxe  
+
+    Bonus:
+    +2 se includi varianti avanzate (es. drill su misura)  
+    +1 se aggiungi metriche di monitoraggio (es. durata, intensità)
   expected_output: >
-    Un documento in formato markdown che contenga:
-    - Un'analisi dettagliata dello stile dell'avversario e buone pratiche contro ogni tipo.
-    - Un piano settimanale di allenamento, con esempi di esercizi giornalieri e sessioni specifiche.
-    - Consigli tattici e suggerimenti pratici per prepararsi al meglio al combattimento.
+    Documento markdown con:
+    - Analisi dello stile dell’avversario
+    - Tabella settimanale (7 giorni) con sessioni e due riposi non consecutivi
+    - Consigli tattici conclusivi
   agent: coach
   output_file: training_strategy.md
