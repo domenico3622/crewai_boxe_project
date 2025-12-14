@@ -1,7 +1,3 @@
-# Boxe1Project Crew: AI-Powered Boxing Strategy
-
-![Boxe AI Crew]
-
 ## 🥊 Project Overview
 **Boxe1Project Crew** is an advanced multi-agent AI system built on the **CrewAI** framework. It simulates a high-level boxing management and coaching team, interacting to make crucial career decisions for a professional boxer.
 
